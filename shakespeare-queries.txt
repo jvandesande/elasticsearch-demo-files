@@ -1,0 +1,182 @@
+# Fetch all (limit to 20 hits)
+GET /shakespeare/_search
+{
+  "size": 20
+}
+
+# Match query without fuzziness
+GET /shakespeare/_search
+{
+  "query": {
+    "match": {
+      "text_entry": {
+        "query": "upon the edge"
+      }
+    }
+  }
+}
+
+# Match query with fuzziness 
+GET /shakespeare/_search
+{
+  "query": {
+    "match": {
+      "text_entry": {
+        "query": "upon the edg",
+        "fuzziness": 1
+      }
+    }
+  }
+}
+
+# Match phrase query (matches the given phrase) 
+GET /shakespeare/_search
+{
+  "query": {
+    "match_phrase": {
+      "text_entry": {
+        "query": "upon the edge"
+      }
+    }
+  }
+}
+
+# Query string query (powerful for customized search) 
+GET /shakespeare/_search
+{
+  "query": {
+    "query_string": {
+      "query": "sword AND heart"
+    }
+  }
+}
+
+# Query string query with filters on specified fields
+GET /shakespeare/_search
+{
+  "query": {
+    "query_string": {
+      "query": "speaker:MACBETH AND speech_number:>5 AND sword"
+    }
+  }
+}
+
+# Document used in more like this (MLT) query
+GET /shakespeare/doc/27201
+
+# More like this query example, like other document(s)
+GET /shakespeare/_search
+{
+  "query": {
+    "more_like_this": {
+      "like": [
+        {
+          "_id": 27201,
+          "_index": "shakespeare"
+        }
+      ]
+    }
+  }
+}
+
+# More like this query example, like with custom text
+GET /shakespeare/_search
+{
+  "query": {
+    "more_like_this": {
+      "like": [
+        {
+          "doc": {
+            "text_entry": "whose house"
+          }
+        }
+      ],
+      "min_term_freq": 1
+    }
+  }
+}
+
+# Multi match query with field based boost factors
+GET /shakespeare/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "henry",
+      "fields": [
+        "speaker.text^3",
+        "play_name.text^2",
+        "text_entry"
+      ]
+    }
+  }
+}
+
+# Function score query
+GET /shakespeare/_search
+{
+  "query": {
+    "function_score": {
+      "query": {
+        "match": {
+          "text_entry": "house"
+        }
+      },
+      "functions": [
+        {
+          "filter": {
+            "term": {
+              "speaker": "BUSHY"
+            }
+          },
+          "weight": 2
+        },
+        {
+          "script_score" : {
+            "script": {
+              "source": "doc['speech_number'].value > 150 ? 2 : 1"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Creates the mapping for the shakespeare dataset
+PUT /shakespeare
+{
+  "mappings": {
+    "doc": {
+      "properties": {
+        "speaker": {
+          "type": "keyword",
+          "fields": {
+            "text": {
+              "type": "text"
+            }
+          }
+        },
+        "play_name": {
+          "type": "keyword",
+          "fields": {
+            "text": {
+              "type": "text"
+            }
+          }
+        },
+        "line_id": {
+          "type": "integer"
+        },
+        "speech_number": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
+
+# Shows all indices as text table
+GET /_cat/indices?v
+
+# Removes shakespeare index
+DELETE /shakespeare
