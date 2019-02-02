@@ -1,11 +1,11 @@
 # Fetch all (limit to 20 hits)
-GET /shakespeare/_search
+POST /shakespeare/_search
 {
   "size": 20
 }
 
 # Match query without fuzziness
-GET /shakespeare/_search
+POST /shakespeare/_search
 {
   "query": {
     "match": {
@@ -16,8 +16,8 @@ GET /shakespeare/_search
   }
 }
 
-# Match query with fuzziness 
-GET /shakespeare/_search
+# Match query with fuzziness
+POST /shakespeare/_search
 {
   "query": {
     "match": {
@@ -29,8 +29,8 @@ GET /shakespeare/_search
   }
 }
 
-# Match phrase query (matches the given phrase) 
-GET /shakespeare/_search
+# Match phrase query (matches the given phrase)
+POST /shakespeare/_search
 {
   "query": {
     "match_phrase": {
@@ -41,8 +41,8 @@ GET /shakespeare/_search
   }
 }
 
-# Query string query (powerful for customized search) 
-GET /shakespeare/_search
+# Query string query (powerful for customized search)
+POST /shakespeare/_search
 {
   "query": {
     "query_string": {
@@ -52,7 +52,7 @@ GET /shakespeare/_search
 }
 
 # Query string query with filters on specified fields
-GET /shakespeare/_search
+POST /shakespeare/_search
 {
   "query": {
     "query_string": {
@@ -65,7 +65,7 @@ GET /shakespeare/_search
 GET /shakespeare/doc/27201
 
 # More like this query example, like other document(s)
-GET /shakespeare/_search
+POST /shakespeare/_search
 {
   "query": {
     "more_like_this": {
@@ -80,7 +80,7 @@ GET /shakespeare/_search
 }
 
 # More like this query example, like with custom text
-GET /shakespeare/_search
+POST /shakespeare/_search
 {
   "query": {
     "more_like_this": {
@@ -97,7 +97,7 @@ GET /shakespeare/_search
 }
 
 # Multi match query with field based boost factors
-GET /shakespeare/_search
+POST /shakespeare/_search
 {
   "query": {
     "multi_match": {
@@ -112,7 +112,7 @@ GET /shakespeare/_search
 }
 
 # Function score query
-GET /shakespeare/_search
+POST /shakespeare/_search
 {
   "query": {
     "function_score": {
@@ -140,6 +140,31 @@ GET /shakespeare/_search
       ]
     }
   }
+}
+
+# Sort entries by alphabet (not possible for text fields without fielddata)
+POST /shakespeare/_search
+{
+  "sort": [
+    {
+      "text_entry": {
+        "order": "asc"
+      }
+    }
+  ]
+}
+
+# Sort by play name and speaker
+POST /shakespeare/_search
+{
+  "sort": [
+    {
+      "play_name": {
+        "order": "asc"
+      },
+      "speaker": "asc"
+    }
+  ]
 }
 
 # Creates the mapping for the shakespeare dataset
